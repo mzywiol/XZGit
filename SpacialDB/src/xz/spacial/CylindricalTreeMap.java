@@ -6,6 +6,8 @@
 
 package xz.spacial;
 
+import xz.util.math.Angle;
+
 
 public class CylindricalTreeMap<T> extends ContinuousTreeMap<Angle, T>
 {

@@ -6,6 +6,8 @@
 
 package xz.spacial;
 
+import xz.util.math.Point;
+import xz.util.math.Angle;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.NavigableMap;
@@ -29,7 +31,7 @@ public class FlatMap<T>
       this.yAxis = new TreeMap<>(Point.Y_AXIS_COMPARATOR);
    }
    
-   FlatMap.RelativeLocation<T> getNodeLocation(Point p)
+   FlatMap.RelativeLocation getNodeLocation(Point p)
    {
       if (xAxis.size() == 0)
          return null;
@@ -37,7 +39,7 @@ public class FlatMap<T>
       if (xAxis.size() == 1)
       {
          Node<T> onlyNode = xAxis.firstEntry().getValue();
-         return new RelativeLocation<>(onlyNode.getCoords().equals(p), onlyNode);
+         return new RelativeLocation(onlyNode.getCoords().equals(p), onlyNode);
       }
       
       Node<T> nearest = findNearestNode(p.getX(), p.getY(), true);
@@ -45,19 +47,19 @@ public class FlatMap<T>
       
       // are we at an existing node?
       if (pNearest.equals(p))
-         return new RelativeLocation<>(true, nearest);// return this existing node
+         return new RelativeLocation(true, nearest);// return this existing node
       
       return findTriangleWereIn(p, nearest);      
    }
 
-   private RelativeLocation<T> findTriangleWereIn(Point p, Node<T> nearest)
+   private RelativeLocation findTriangleWereIn(Point p, Node<T> nearest)
    {
       // are we between existing nodes?
       Point pNearest = nearest.getCoords();
       Angle dNearestThis = direction(pNearest, p);
       Node<T> opposite = nearest.getEdgeAt(dNearestThis);
       if (opposite != null)
-         return new RelativeLocation<>(true, nearest, opposite); // return both ends of the edge, starting with the nearest
+         return new RelativeLocation(true, nearest, opposite); // return both ends of the edge, starting with the nearest
       
       // find edges to left and right
       Node<T> left = nearest.getEdgeLeft(dNearestThis);
@@ -67,14 +69,14 @@ public class FlatMap<T>
       {
          // is this the only node in sight?
          if (right == null)
-            return new RelativeLocation<> (false, nearest); // return that node
+            return new RelativeLocation(false, nearest); // return that node
          else
-            return new RelativeLocation<> (false, nearest, right); // return both ends of the edge, starting with the nearest
+            return new RelativeLocation(false, nearest, right); // return both ends of the edge, starting with the nearest
       }
       else
       {
          if (right == null)
-            return new RelativeLocation<>(false, nearest, left); // return both ends of the edge, starting with the nearest
+            return new RelativeLocation(false, nearest, left); // return both ends of the edge, starting with the nearest
          else
          {  // left and right are not null
             Point pLeft = left.getCoords();
@@ -83,7 +85,7 @@ public class FlatMap<T>
             // are we within a triangle?
             if (p.isWithinTriangle(pNearest, pLeft, pRight))
             {
-               return new RelativeLocation<>(true, nearest, left, right);
+               return new RelativeLocation(true, nearest, left, right);
             }
             else
             {
@@ -95,7 +97,7 @@ public class FlatMap<T>
                }
                else
                { // triangle is on the other side, we are outside of the whole graph
-                  return new RelativeLocation<>(false, right, nearest, left);
+                  return new RelativeLocation(false, right, nearest, left);
                }
             }
          }
@@ -106,7 +108,7 @@ public class FlatMap<T>
    {
       Point coords = new Point(x, y);
       
-      RelativeLocation<T> loc = getNodeLocation(coords);
+      RelativeLocation loc = getNodeLocation(coords);
       
       Node<T> node = new Node<>(coords, data);
       
@@ -406,7 +408,7 @@ public class FlatMap<T>
       this.nodeListener = null;
    }
    
-   static class RelativeLocation<T>
+   class RelativeLocation
    {
       Node<T>[] nodes;
       boolean within;

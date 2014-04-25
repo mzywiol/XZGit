@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package xz.spacial;
+package xz.spacial.ui;
 
+import xz.util.math.Point;
 import java.util.HashSet;
 import java.util.Objects;
 import javafx.application.Application;
@@ -18,6 +19,12 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
+import xz.spacial.FlatMap;
+import xz.spacial.MapEdgeEvent;
+import xz.spacial.MapEdgeListener;
+import xz.spacial.MapNodeEvent;
+import xz.spacial.MapNodeListener;
+import xz.spacial.Node;
 
 
 public class SpacialUI extends Application implements MapEdgeListener<Circle>, MapNodeListener<Circle>

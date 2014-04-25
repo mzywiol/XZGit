@@ -4,12 +4,13 @@
  * and open the template in the editor.
  */
 
-package xz.spacial;
+package xz.util.math;
 
 import java.util.TreeMap;
 
 /**
- *
+ * Class representing an Angle on Cartesian plane, in degrees range (-180.0, 180.0].
+ * 
  * @author eXistenZ
  */
 public final class Angle implements Comparable<Angle>
@@ -24,6 +25,8 @@ public final class Angle implements Comparable<Angle>
 
    private final double degrees;
    private final Long cacheKey;
+   
+   //todoxz: add support for radians
    
    /**
     * Returns an angle equal to given <code>value</code> in degrees.
@@ -82,6 +85,13 @@ public final class Angle implements Comparable<Angle>
       return Angle.deg(degrees + HALF_ANGLE);
    }
 
+   /**
+    * Returns true if this angle's value is within an arc starting from <code>from</code> Angle and ending at <code>to</code> Angle.
+    * 
+    * @param from starting angle of the arc
+    * @param to ending angle of the arc
+    * @return true if this angle is within the arc
+    */
    public boolean isBetween(Angle from, Angle to)
    {
       double vFrom = from.deg();
@@ -97,17 +107,40 @@ public final class Angle implements Comparable<Angle>
       }
    }
    
+   /**
+    * Returns the difference between this and <code>to</code> Angles, in degrees. Specifically, it returns number of degrees
+    * this angle needs to rotate to be equal to <code>to</code> Angle. The sign of return value signifies the direction 
+    * of that rotation - if it's positive, <code>to</code> Angle is to the right of this, if negative - it's to the left.
+    * @param to Angle to count the difference to
+    * @return difference between two Angles
+    * @throws NullPointerException if <code>to</code> Angle is null
+    */
    public double diffDeg(Angle to)
    {
       return normalize(to.deg() - degrees);
    }
    
+   /**
+    * Returns true if this Angle is in left arc of the <code>of</code> Angle, i.e. if difference between them 
+    * is positive and under 180 degrees.
+    * @param of the other Angle
+    * @return true if this Angle is in left arc of the <code>of</code> Angle
+    * @throws NullPointerException if <code>to</code> Angle is null
+    */
    public boolean isToLeftOf(Angle of)
    {
       double diff = diffDeg(of);
       return diff > 0.0 && diff < 180.0;
    }
    
+   /**
+    * Returns true if this Angle is in right arc of the <code>of</code> Angle, i.e. if difference between them is
+    * negative and above -180 degrees.
+    *
+    * @param of the other Angle
+    * @return true if this Angle is in right arc of the <code>of</code> Angle
+    * @throws NullPointerException if <code>to</code> Angle is null
+    */
    public boolean isToRightOf(Angle of)
    {
       return diffDeg(of) < 0.0;

@@ -10,7 +10,7 @@ package xz.spacial;
  *
  * @author eXistenZ
  */
-class MapNodeEvent<T>
+public class MapNodeEvent<T>
 {
    final Node<T> node;
    final EventType eventType;

@@ -5,6 +5,8 @@
  */
 package xz.spacial;
 
+import xz.util.math.Point;
+import xz.util.math.Angle;
 import java.util.Collection;
 import java.util.Objects;
 

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package xz.spacial;
+package xz.util.math;
 
 import org.junit.Test;
 
@@ -55,6 +55,11 @@ public class XZMathTest
    @Test
    public void testCompareToRange()
    {
+      assertEquals(0, XZMath.compareToRange(2.0, 2.0, true, 2.0, true));
+      assertEquals(-1, XZMath.compareToRange(2.0, 2.0, false, 2.0, true));
+      assertEquals(0, XZMath.compareToRange(2.0, 2.0, true, 2.0, false));
+      assertEquals(-1, XZMath.compareToRange(2.0, 2.0, false, 2.0, false));
+      
       assertEquals(0, XZMath.compareToRange(5.0, 2.0, true, 10.0, true));
       assertEquals(0, XZMath.compareToRange(2.0, 2.0, true, 10.0, true));
       assertEquals(-1, XZMath.compareToRange(2.0, 2.0, false, 10.0, true));

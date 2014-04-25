@@ -6,6 +6,9 @@
 
 package xz.spacial;
 
+import xz.util.test.XZTestHelper;
+import xz.util.math.Point;
+import xz.util.math.Angle;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

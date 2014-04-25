@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package xz.spacial;
+package xz.util.test;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;

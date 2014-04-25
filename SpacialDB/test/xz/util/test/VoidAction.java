@@ -4,14 +4,14 @@
  * and open the template in the editor.
  */
 
-package xz.spacial;
+package xz.util.test;
 
 /**
  * Functional interface to use in various tests.
  * 
  * @author eXistenZ
  */
-interface VoidAction
+public interface VoidAction
 {
    void perform();
 }
