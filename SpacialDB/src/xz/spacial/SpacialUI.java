@@ -5,11 +5,8 @@
  */
 package xz.spacial;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Objects;
-import java.util.stream.Stream;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.Group;
@@ -23,7 +20,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 
-public class SpacialUI extends Application
+public class SpacialUI extends Application implements MapEdgeListener<Circle>, MapNodeListener<Circle>
 {
    FlatMap<Circle> map = new FlatMap<>();
    Node<Circle> selectedNode = null;
@@ -31,12 +28,14 @@ public class SpacialUI extends Application
    private Rectangle mapBackground;
    private Group mapGroup;
    
-   HashMap<Edge, Line> edges = new HashMap<>();
+   HashSet<Line> edges = new HashSet<>();
 
    @Override
    public void start(Stage primaryStage)
    {
       map.setSelectionTolerance(5.0);
+      map.addEdgeListener(this);
+      map.addNodeListener(this);
       
       mapGroup = createMapCanvas();
       
@@ -77,42 +76,7 @@ public class SpacialUI extends Application
                   if (selectedNode != null)
                      selectedNode.getData().setFill(Color.BLACK);
                   selectedNode = null;
-                  
-                  Node<Circle> newNode = map.addNode(x, y, null);
-                  if (newNode.getData() == null)
-                  {
-                     Circle circle = new Circle(x, y, 7.0, Color.BLACK);
-                     circle.setMouseTransparent(true);
-                     mapGroup.getChildren().add(circle);
-                     newNode.setData(circle);
-                  }
-                  
-                  ArrayList<Edge> toRemove = new ArrayList<>();
-                  for (Node<Circle> edge : newNode.edges.values())
-                  {
-                     Line line = new Line(newNode.getX(), newNode.getY(), edge.getX(), edge.getY());
-                     line.setMouseTransparent(true);
-                     mapGroup.getChildren().add(line);
-                     edges.put(new Edge(newNode, edge), line);
-                     edges.put(new Edge(edge, newNode), line);
-                     
-                     Stream<Map.Entry<Edge, Line>> edgesOfEdge = edges.entrySet().stream().filter(e -> e.getKey().from == edge);
-                     edgesOfEdge.forEach(entry -> {
-                        if (!edge.edges.values().contains(entry.getKey().to)) 
-                        {
-                           mapGroup.getChildren().remove(entry.getValue());
-                           toRemove.add(entry.getKey());
-                           toRemove.add(entry.getKey().opposite());
-                        }
-                     }
-                     );
-                     for (Edge toRem : toRemove)
-                     {
-                        edges.remove(toRem);
-                     }
-                     toRemove.clear();
-                  }
-                  System.out.println("New node: x=" + x + ", y=" + y);
+                  map.addNode(x, y, new Circle(x, y, 3.0, Color.BLACK));
                }
             }
             else if (event.getButton().equals(MouseButton.SECONDARY))
@@ -148,6 +112,62 @@ public class SpacialUI extends Application
    {
       launch(args);
    }
+
+   @Override
+   public void edgeAdded(MapEdgeEvent<Circle> e)
+   {
+      Node<Circle> newNode = e.getNode1();
+      Node<Circle> edge = e.getNode2();
+      Line line = new Line(newNode.getX(), newNode.getY(), edge.getX(), edge.getY());
+      line.setMouseTransparent(true);
+      mapGroup.getChildren().add(line);
+      edges.add(line);
+   }
+
+   @Override
+   public void edgeRemoved(MapEdgeEvent<Circle> e)
+   {
+      Node<Circle> node1 = e.getNode1();
+      Node<Circle> node2 = e.getNode2();
+      Line line = edges.stream().filter(l -> {return compare(l, node1, node2);}).findFirst().get();
+      if (line != null)
+         mapGroup.getChildren().remove(line);
+   }
+   
+   boolean compare(Line l, Node n1, Node n2)
+   {
+      return (l.getStartX() == n1.getX()) && (l.getStartY() == n1.getY()) && (l.getEndX() == n2.getX()) && (l.getEndY() == n2.getY())
+          || (l.getStartX() == n2.getX()) && (l.getStartY() == n2.getY()) && (l.getEndX() == n1.getX()) && (l.getEndY() == n1.getY());
+   }
+
+   @Override
+   public void nodeAdded(MapNodeEvent<Circle> e)
+   {
+      Circle circle = e.getNode().getData();
+      if (circle != null)
+      {
+         circle.setMouseTransparent(true);
+         mapGroup.getChildren().add(circle);
+      }
+      System.out.println("New node: x=" + e.getNode().getX() + ", y=" + e.getNode().getY());
+   }
+
+   @Override
+   public void nodeRemoved(MapNodeEvent<Circle> e)
+   {
+      Circle circle = e.getNode().getData();
+      if (circle != null)
+      {
+         circle.setMouseTransparent(true);
+         mapGroup.getChildren().remove(circle);
+      }
+   }
+
+   @Override
+   public void nodeUpdated(MapNodeEvent<Circle> e)
+   {
+      /* noop */
+   }
    
    class Edge 
    {
@@ -168,8 +188,11 @@ public class SpacialUI extends Application
       public int hashCode()
       {
          int hash = 7;
-         hash = 47 * hash + Objects.hashCode(this.from);
-         hash = 47 * hash + Objects.hashCode(this.to);
+         int fromHash = Objects.hashCode(this.from);
+         int toHash = Objects.hashCode(this.to);
+         
+         hash = 47 * hash + fromHash < toHash ? fromHash : toHash;
+         hash = 47 * hash + fromHash < toHash ? toHash : fromHash;
          return hash;
       }
 
@@ -185,15 +208,8 @@ public class SpacialUI extends Application
             return false;
          }
          final Edge other = (Edge) obj;
-         if (!Objects.equals(this.from, other.from))
-         {
-            return false;
-         }
-         if (!Objects.equals(this.to, other.to))
-         {
-            return false;
-         }
-         return true;
+         return this.from.equals(other.from) && this.to.equals(other.to) 
+               || this.from.equals(other.to) && this.from.equals(other.to);
       }
       
       

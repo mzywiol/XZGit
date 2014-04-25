@@ -19,11 +19,18 @@ public final class Angle implements Comparable<Angle>
    public static final double MAX_VALUE = 180.0;
    public static final double MIN_VALUE = -180.0;
    public static final double HALF_ANGLE = 180.0;
+   public static final double RIGHT_ANGLE = 90.0;
    private static final TreeMap<Long, Angle> cachedAngles = new TreeMap<>();
 
    private final double degrees;
    private final Long cacheKey;
    
+   /**
+    * Returns an angle equal to given <code>value</code> in degrees.
+    * 
+    * @param value degrees of the angle
+    * @return the angle
+    */
    public static Angle deg(double value)
    {
       double angle = normalize(value);
@@ -40,9 +47,15 @@ public final class Angle implements Comparable<Angle>
       return Math.round(Math.scalb(normalizedAngle, PRECISION));
    }
 
-   public static double normalize(double angle)
+   /**
+    * Normalizes the given <code>degrees</code> value, i.e. returns the degrees value within (-180, 180] bounds
+    * that is equal to given degrees.
+    * @param degrees given value
+    * @return normalized degrees value
+    */
+   public static double normalize(double degrees)
    {
-      return XZMath.normalize(angle, 180.0, -360.0);
+      return XZMath.normalize(degrees, 180.0, -360.0);
    }
    
    private Angle(Long cacheKey)
@@ -51,11 +64,19 @@ public final class Angle implements Comparable<Angle>
       this.cacheKey = cacheKey;
    }
 
+   /**
+    * Returns value of this Angle in degrees.
+    * @return value of this Angle in degrees
+    */
    public double deg()
    {
       return degrees;
    }
    
+   /**
+    * Returns an Angle opposite to this.
+    * @return an Angle opposite to this
+    */
    public Angle opposite()
    {
       return Angle.deg(degrees + HALF_ANGLE);
@@ -69,7 +90,8 @@ public final class Angle implements Comparable<Angle>
       if (vTo > vFrom)
       {
          return (vFrom < degrees) && (degrees < vTo);
-      } else
+      } 
+      else
       {
          return (vFrom < degrees && degrees <= Angle.MAX_VALUE) || (Angle.MIN_VALUE < degrees && degrees < vTo);
       }
