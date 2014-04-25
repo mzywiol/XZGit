@@ -1,0 +1,46 @@
+SpacialDB notes:
+
+1. CircularTreeMap
+
+2. SequentialIterator
+
+3. Node<T> class:
+- x : double
+- y : double
+- data : T
+- edges : CircularTreeMap<angle : Double, node : Node>
+
+4. Plane<T>
+
+
+logic to write and test:
+
+1. Add node to map (UI: draw point on map)
+2. Select node (UI: highlight selected node)
+
+3. Find closest node (UI: highlight closest node)
+4. Create edge (UI: draw line)
+5. Create triangle:
+
+	
+
+
+
+
+
+
+====
+
+World Map Editor
+
+Node<T> data type: 
+- height over sea level : short (in meters)
+- terrain: Enum: ground (grass, dirt, field, forest, rock, ice), water, bog, town?
+- contained in: 1 to many link to Geo Object
+
+Geo Objects:
+name : String
+typy : Enum 
+	simple (leaves): town, village, mountain, road, special point (e.g. artifact, temple, monument, etc.)
+	complex (branches, can contain leaves and other branches): continent, island, ocean, sea, lake, river, mountains, forest, country
+is part of : link to parent Geo Object
