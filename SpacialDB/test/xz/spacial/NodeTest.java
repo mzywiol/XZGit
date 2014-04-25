@@ -52,9 +52,14 @@ public class NodeTest
    @Test
    public void testConnect()
    {
-      Node<String> node1 = new Node<>(new Point(0.0, 0.0), null);
-      Node<String> node2 = new Node<>(new Point(0.0, 10.0), null);
-      Node<String> node3 = new Node<>(new Point(10.0, 0.0), null);
+      Node<String> node1 = newNode(0.0, 0.0);
+      
+      XZTestHelper.assertNPE(() -> { node1.connect(null); }); 
+      node1.connect(node1);
+      assertTrue(node1.edges.isEmpty());
+      
+      Node<String> node2 = newNode(0.0, 10.0);
+      Node<String> node3 = newNode(10.0, 0.0);
 
       assertTrue(node1.edges.isEmpty());
       assertTrue(node2.edges.isEmpty());
@@ -85,9 +90,17 @@ public class NodeTest
    @Test
    public void testConnect_withAngle()
    {
-      Node<String> node1 = new Node<>(null, null);
-      Node<String> node2 = new Node<>(null, null);
-      Node<String> node3 = new Node<>(null, null);
+      Node<String> node1 = newNode(0.0, 0.0);
+      
+      XZTestHelper.assertNPE(() -> {node1.connect(null, Angle.deg(123.0));});
+      node1.connect(node1, Angle.deg(123.0));
+      assertTrue(node1.edges.isEmpty());
+
+      Node<String> node2 = newNode(0.0, 1.0);
+      
+      XZTestHelper.assertNPE(() -> {node1.connect(node2, null);});
+      
+      Node<String> node3 = newNode(0.0, 2.0);
       
       assertTrue(node1.edges.isEmpty());
       assertTrue(node2.edges.isEmpty());
@@ -111,9 +124,11 @@ public class NodeTest
    @Test
    public void testIsConnectedTo()
    {
-      Node<String> node = new Node<>(new Point(0.0, 0.0), null);
+      Node<String> node = newNode(0.0, 0.0);
       Node<String> nodeAt0 = new Node<>(new Point(1.0, 0.0), null);
       Node<String> nodeAt45 = new Node<>(new Point(1.0, 1.0), null);
+      
+      XZTestHelper.assertNPE(() -> {node.isConnectedTo(null);});
       
       assertFalse(node.isConnectedTo(node));
       assertFalse(node.isConnectedTo(nodeAt0));
@@ -135,7 +150,10 @@ public class NodeTest
    @Test
    public void testConnectionAngle()
    {
-      Node<String> node = new Node<>(new Point(0.0, 0.0), null);
+      Node<String> node = newNode(0.0, 0.0);
+      
+      XZTestHelper.assertNPE(() -> {node.connectionAngle(null);});
+      
       Node<String> nodeAt0 = new Node<>(new Point(0.0, 1.0), null);
       Node<String> nodeAt45 = new Node<>(new Point(1.0, 1.0), null);
 
@@ -158,9 +176,12 @@ public class NodeTest
    @Test
    public void testGetEdgeLeft()
    {
-      Node<String> node = new Node<>(null, null);
-      Node<String> nodeAt0 = new Node<>(null, null);
-      Node<String> nodeAt45 = new Node<>(null, null);
+      Node<String> node = newNode(0.0, 0.0);
+
+      XZTestHelper.assertNPE(() -> { node.getEdgeLeft(null); });
+
+      Node<String> nodeAt0 = new Node<>(new Point(0.0, 1.0), null);
+      Node<String> nodeAt45 = new Node<>(new Point(1.0, 1.0), null);
       Angle angle0 = Angle.deg(0.0);
       Angle angle45 = Angle.deg(45.0);
       
@@ -187,9 +208,12 @@ public class NodeTest
    @Test
    public void testGetEdgeRight()
    {
-      Node<String> node = new Node<>(null, null);
-      Node<String> nodeAt0 = new Node<>(null, null);
-      Node<String> nodeAt45 = new Node<>(null, null);
+      Node<String> node = newNode(0.0, 0.0);
+      
+      XZTestHelper.assertNPE(() -> {node.getEdgeRight(null);});
+      
+      Node<String> nodeAt0 = newNode(0.0, 1.0);
+      Node<String> nodeAt45 = newNode(1.0, 1.0);
       Angle angle0 = Angle.deg(0.0);
       Angle angle45 = Angle.deg(45.0);
 
@@ -211,13 +235,21 @@ public class NodeTest
       assertSame(nodeAt0, node.getEdgeRight(Angle.deg(-179.9)));
       assertSame(nodeAt0, node.getEdgeRight(Angle.deg(180.1)));
    }
+
+   private static Node<String> newNode(double x, double y)
+   {
+      return new Node<>(new Point(x, y), null);
+   }
    
    @Test
    public void testGetAngleLeft()
    {
-      Node<String> node = new Node<>(null, null);
-      Node<String> nodeAt0 = new Node<>(null, null);
-      Node<String> nodeAt45 = new Node<>(null, null);
+      Node<String> node = newNode(0.0, 0.0);
+      
+      XZTestHelper.assertNPE(() -> {node.getAngleLeft(null);});
+      
+      Node<String> nodeAt0 = newNode(0.0, 1.0);
+      Node<String> nodeAt45 = newNode(0.0, 2.0);
       Angle angle0 = Angle.deg(0.0);
       Angle deg45 = Angle.deg(45.0);
 
@@ -243,9 +275,12 @@ public class NodeTest
    @Test
    public void testGetAngleRight()
    {
-      Node<String> node = new Node<>(null, null);
-      Node<String> nodeAt0 = new Node<>(null, null);
-      Node<String> nodeAt45 = new Node<>(null, null);
+      Node<String> node = newNode(0.0, 0.0);
+
+      XZTestHelper.assertNPE(() -> { node.getAngleRight(null); });
+
+      Node<String> nodeAt0 = new Node<>(new Point(0.0, 1.0), null);
+      Node<String> nodeAt45 = new Node<>(new Point(1.0, 1.0), null);
       Angle angle0 = Angle.deg(0.0);
       Angle angle45 = Angle.deg(45.0);
 

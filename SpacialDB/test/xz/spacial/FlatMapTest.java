@@ -232,6 +232,7 @@ public class FlatMapTest
       assertEquals(6, map.getNodeCount());
       assertConnected(nodeB1, nodeD);
       assertConnected(nodeB1, nodeB);
+      assertNotConnected(nodeB1, nodeC);
       assertConnected(nodeB1, nodeAB);
       assertConnected(nodeB1, nodeA);
       
@@ -242,41 +243,50 @@ public class FlatMapTest
       assertConnected(nodeA1, nodeA);
       assertConnected(nodeA1, nodeC);
       assertConnected(nodeA1, nodeD);
+      assertNotConnected(nodeA, nodeB1);
+      assertConnected(nodeA1, nodeAB);
       
       // test: add node just outside node AB
       Node<String> nodeAB1 = map.addNode(0.75, 0.25, "AB1");
       assertEquals(8, map.getNodeCount());
       assertConnected(nodeAB1, nodeB1);
       assertConnected(nodeAB1, nodeA1);
-      assertNotConnected(nodeAB1, nodeAB1);
+      assertConnected(nodeAB, nodeAB1);
+      assertNotConnected(nodeB1, nodeA1);
       
       // test: add a node inside a triangle
-      Node<String> nodeE = map.addNode(1.0, 0.75, "E");
+      Node<String> nodeE = map.addNode(1.75, 0.75, "E");
       assertEquals(9, map.getNodeCount());
       assertConnected(nodeE, nodeB);
       assertConnected(nodeE, nodeAB);
       assertConnected(nodeE, nodeC);
+      assertConnected(nodeE, nodeA);
+      assertNotConnected(nodeC, nodeAB);
+      assertConnected(nodeE, nodeD);
+      assertNotConnected(nodeB, nodeC);
       
       // test: replace a vertex of a triangle
-      assertEquals(6, nodeC.getConnectedNodes().size());
+      assertEquals(4, nodeC.getConnectedNodes().size());
       nodeC = map.addNode(nodeC.getCoords().getX(), nodeC.getCoords().getY(), "newC");
       assertEquals(9, map.getNodeCount());
-      assertEquals(6, nodeC.getConnectedNodes().size());
-      assertConnected(nodeC, nodeB);
+      assertEquals(4, nodeC.getConnectedNodes().size());
       assertConnected(nodeC, nodeE);
-      assertConnected(nodeC, nodeAB);
       assertConnected(nodeC, nodeA);
       assertConnected(nodeC, nodeA1);
       assertConnected(nodeC, nodeD);
       
       // test: new node within existing edge
-      Node<String> nodeBC = map.addNode(1.5, 1.0, "BC");
+      Node<String> nodeBD = map.addNode(2.0, 1.5, "BD");
       assertEquals(10, map.getNodeCount());
-      assertNotConnected(nodeB, nodeC);
-      assertConnected(nodeBC, nodeB);
-      assertConnected(nodeBC, nodeC);
-      assertConnected(nodeBC, nodeD);
-      assertConnected(nodeBC, nodeE);
+      assertNotConnected(nodeB, nodeD);
+      assertConnected(nodeBD, nodeB);
+      assertConnected(nodeBD, nodeD);
+      assertConnected(nodeBD, nodeB1);
+      assertConnected(nodeBD, nodeE);
+      assertConnected(nodeBD, nodeC);
+      assertNotConnected(nodeE, nodeD);
+      assertConnected(nodeBD, nodeAB);
+      assertNotConnected(nodeB, nodeE);
    }
 
    private void assertConnected(Node<String> n1, Node<String> n2)
